@@ -513,27 +513,24 @@ class mainwindow(QtWidgets.QDialog, Ui_Dialog):
         monitor_created = False;
 
         for x in messages:
-            if (x in status):
+            if (x in status.lower()):
                 monitor_created = True
 
         if (monitor_created):
             monitor_interface_process = str(subprocess.getoutput("airmon-ng"))
 
 
-            regex = re.compile(r"mon\d", re.IGNORECASE)
+            regex = re.compile(r"\bmon\d+\b", re.IGNORECASE)
             interfaces = regex.findall(monitor_interface_process)
 
             if len(interfaces) == 0:
-            	regex = re.compile(r"wlan\dmon", re.IGNORECASE)
-            	interfaces = regex.findall(monitor_interface_process)
+                regex = re.compile(r"\bwl[a-z0-9]+mon\b", re.IGNORECASE)
+                interfaces = regex.findall(monitor_interface_process)
 
-            	if len(interfaces) == 0:
-            		self.monitor_failed_signal.emit()
-            		return
+                if len(interfaces) == 0:
+                    self.monitor_failed_signal.emit()
+                    return
 
-
-
-            interfaces = regex.findall(monitor_interface_process)
             if (interfaces):
                 self.monitor_interface = interfaces[0]
             else:
